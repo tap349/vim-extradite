@@ -52,8 +52,8 @@ function! s:Extradite(bang) abort
         exe 'vertical resize '.g:extradite_width
     endif
     command! -buffer -bang Extradite :execute s:Extradite(<bang>0)
-    " invoke ExtraditeClose instead of bdelete so we can do the necessary cleanup
-    nnoremap <buffer> <silent> q          :<C-U>call <SID>ExtraditeClose()<CR>
+    " add :echo<CR> in the end to clear command line after closing extradite
+    nnoremap <buffer> <silent> q          :<C-U>call <SID>ExtraditeClose()<CR>:echo<CR>
     nnoremap <buffer> <silent> <CR>       :<C-U>exe <SID>ExtraditeJump("edit")<CR>
     nnoremap <buffer> <silent> <C-v>      :<C-U>exe <SID>ExtraditeJump((&splitbelow ? "botright" : "topleft")." vsplit")<CR>
     nnoremap <buffer> <silent> <C-t>      :<C-U>exe <SID>ExtraditeJump("tabedit")<CR>
