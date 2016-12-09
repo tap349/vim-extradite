@@ -59,7 +59,6 @@ function! s:Extradite(bang) abort
     nnoremap <buffer> <silent> <C-t>      :<C-U>exe <SID>ExtraditeJump("tabedit")<CR>
     nnoremap <buffer> <silent> <nowait> d :<C-U>exe <SID>ExtraditeDiff(0)<CR>
     nnoremap <buffer> <silent> <C-w>d     :<C-U>exe <SID>ExtraditeDiff(2)<CR>
-
     " hack to make the cursor stay in the same position. putting line= in ExtraditeDiffToggle / removing <C-U>
     " doesn't seem to work
     nnoremap <buffer> <silent> t    :let line=line('.')<cr> :<C-U>exe <SID>ExtraditeDiffToggle()<CR> :exe line<cr>
