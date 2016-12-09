@@ -53,14 +53,14 @@ function! s:Extradite(bang) abort
     endif
     command! -buffer -bang Extradite :execute s:Extradite(<bang>0)
     " invoke ExtraditeClose instead of bdelete so we can do the necessary cleanup
-    nnoremap <buffer> <silent> q    :<C-U>call <SID>ExtraditeClose()<CR>
-    nnoremap <buffer> <silent> <CR> :<C-U>exe <SID>ExtraditeJump("edit")<CR>
-    nnoremap <buffer> <silent> ov   :<C-U>exe <SID>ExtraditeJump((&splitbelow ? "botright" : "topleft")." vsplit")<CR>
-    nnoremap <buffer> <silent> oh   :<C-U>exe <SID>ExtraditeJump((&splitbelow ? "botright" : "topleft")." split")<CR>
-    nnoremap <buffer> <silent> ot   :<C-U>exe <SID>ExtraditeJump("tabedit")<CR>
-    nnoremap <buffer> <silent> dv   :<C-U>exe <SID>ExtraditeDiff(0)<CR>
-    nnoremap <buffer> <silent> dh   :<C-U>exe <SID>ExtraditeDiff(1)<CR>
-    nnoremap <buffer> <silent> dt   :<C-U>exe <SID>ExtraditeDiff(2)<CR>
+    nnoremap <buffer> <silent> q     :<C-U>call <SID>ExtraditeClose()<CR>
+    nnoremap <buffer> <silent> <CR>  :<C-U>exe <SID>ExtraditeJump("edit")<CR>
+    nnoremap <buffer> <silent> <C-v> :<C-U>exe <SID>ExtraditeJump((&splitbelow ? "botright" : "topleft")." vsplit")<CR>
+    "nnoremap <buffer> <silent> <C-s> :<C-U>exe <SID>ExtraditeJump((&splitbelow ? "botright" : "topleft")." split")<CR>
+    nnoremap <buffer> <silent> <C-t> :<C-U>exe <SID>ExtraditeJump("tabedit")<CR>
+    nnoremap <buffer> <silent> dv    :<C-U>exe <SID>ExtraditeDiff(0)<CR>
+    "nnoremap <buffer> <silent> ds   :<C-U>exe <SID>ExtraditeDiff(1)<CR>
+    nnoremap <buffer> <silent> dt    :<C-U>exe <SID>ExtraditeDiff(2)<CR>
     " hack to make the cursor stay in the same position. putting line= in ExtraditeDiffToggle / removing <C-U>
     " doesn't seem to work
     nnoremap <buffer> <silent> t    :let line=line('.')<cr> :<C-U>exe <SID>ExtraditeDiffToggle()<CR> :exe line<cr>
