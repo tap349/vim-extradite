@@ -272,7 +272,7 @@ function! s:SimpleDiff(git_cmd,a,b) abort
     " this doesn't even disable it, but fixes the effects
     let w:airline_disabled = 1
     command! -buffer -bang Extradite :execute s:Extradite(<bang>0)
-    nnoremap <buffer> <silent> q    :<C-U>call <SID>ExtraditeClose()<CR>
+    nnoremap <buffer> <silent> q    :<C-U>call <SID>ExtraditeClose()<CR>:echo<CR>
     let bufnr = bufnr('')
 
     keepjumps wincmd p
