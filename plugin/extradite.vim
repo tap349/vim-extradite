@@ -62,7 +62,7 @@ function! s:Extradite(bang) abort
     " hack to make the cursor stay in the same position. putting line= in ExtraditeDiffToggle / removing <C-U>
     " doesn't seem to work
     nnoremap <buffer> <silent> t    :let line=line('.')<cr> :<C-U>exe <SID>ExtraditeDiffToggle()<CR> :exe line<cr>
-    autocmd CursorMoved <buffer>    exe 'setlocal statusline='.escape(b:extradata_list[line(".")-1]['date'], ' ')
+    "autocmd CursorMoved <buffer>    exe 'setlocal statusline='.escape(b:extradata_list[line(".")-1]['date'], ' ')
     autocmd BufEnter <buffer>       call s:ExtraditeSyntax()
     autocmd BufLeave <buffer>       hi! link CursorLine NONE
     autocmd BufLeave <buffer>       hi! link Cursor NONE
@@ -160,6 +160,11 @@ function! s:ExtraditePath(...) abort
     let modifier = ''
   endif
   return b:extradata_list[line(".")-1]['commit'].modifier.':'.fugitive#buffer(b:extradite_logged_bufnr).path()
+endfunction
+
+function! ExtraditeCommitDate() abort
+  if !s:ExtraditeIsActiveInTab() | return 'Extradite not active' | endif
+  return b:extradata_list[line(".")-1]['date']
 endfunction
 
 " Closes the file log and returns the selected `commit:path`
