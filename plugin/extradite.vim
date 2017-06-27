@@ -242,7 +242,7 @@ endfunction
 function! s:ExtraditeDiffToggle() abort
   if !exists('b:extradite_simplediff_bufnr') || b:extradite_simplediff_bufnr == -1
     augroup extradite
-      autocmd CursorMoved <buffer> call s:SimpleFileDiff(b:git_cmd,s:ExtraditePath('~1'), s:ExtraditePath())
+      autocmd CursorMoved <buffer> call s:SimpleFileDiff(b:git_cmd, s:ExtraditePath('~1'), s:ExtraditePath())
       " vim seems to get confused if we jump around buffers during a CursorMoved event. Moving the cursor
       " around periodically helps vim figure out where it should really be.
       autocmd CursorHold <buffer>  normal! lh
@@ -260,7 +260,7 @@ function! s:SimpleFileDiff(git_cmd,a,b) abort
   call s:SimpleDiff(a:git_cmd,a:a,a:b)
   let win = bufwinnr(b:extradite_simplediff_bufnr)
   exe 'keepjumps '.win.'wincmd w'
-  keepjumps silent normal! gg
+  "keepjumps silent normal! gg
   "setlocal modifiable
   "  keepjumps silent normal! gg5dd
   "setlocal nomodifiable
@@ -299,9 +299,13 @@ function! s:SimpleDiff(git_cmd,a,b) abort
   endif
 
   setlocal modifiable
-    silent! %delete _
-    let diff = system(a:git_cmd.' diff --no-ext-diff '.a:a.' '.a:b)
-    silent put = diff
+
+  silent! %delete _
+  let diff = system(a:git_cmd.' diff --no-ext-diff '.a:a.' '.a:b)
+  silent put = diff
+  " delete the first 5 lines with diff command summary
+  keepjumps silent normal! gg5dd
+
   setlocal ft=diff buftype=nofile nomodifiable
 
   let b:files = { 'a': a:a, 'b': a:b }
