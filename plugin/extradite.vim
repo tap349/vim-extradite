@@ -26,12 +26,11 @@ endif
 
 autocmd User Fugitive command! -buffer -bang Extradite :execute s:Extradite(<bang>0)
 
-nnoremap <silent> <Plug>ExtraditeClose  :<C-U>call <SID>ExtraditeClose()<CR>
+nnoremap <silent> <Plug>ExtraditeClose :<C-U>call <SID>ExtraditeClose()<CR>
 
 autocmd Syntax extradite call s:ExtraditeSyntax()
 
 function! s:Extradite(bang) abort
-
   " if we are open, close.
   if s:ExtraditeIsActiveInTab()
     call <SID>ExtraditeClose()
@@ -63,15 +62,16 @@ function! s:Extradite(bang) abort
     " doesn't seem to work
     nnoremap <buffer> <silent> t    :let line=line('.')<cr> :<C-U>exe <SID>ExtraditeDiffToggle()<CR> :exe line<cr>
     "autocmd CursorMoved <buffer>    exe 'setlocal statusline='.escape(b:extradata_list[line(".")-1]['date'], ' ')
+    "autocmd CursorMoved <buffer>    exe 'setlocal statusline=' . lightline#statusline(0)
     autocmd BufEnter <buffer>       call s:ExtraditeSyntax()
     autocmd BufLeave <buffer>       hi! link CursorLine NONE
     autocmd BufLeave <buffer>       hi! link Cursor NONE
-    " airline overwrites 'statusline' option for this window, request it to be
-    " disabled
+    " airline overwrites 'statusline' option for this window, request it to be disabled
     let w:airline_disabled = 1
     call s:ExtraditeDiffToggle()
     let t:extradite_bufnr = bufnr('')
     silent doautocmd User Extradite
+
     return ''
   catch /^extradite:/
     return 'echoerr v:errmsg'
@@ -264,6 +264,10 @@ function! s:SimpleFileDiff(git_cmd,a,b) abort
     keepjumps silent normal! gg5dd
   setlocal nomodifiable
   keepjumps wincmd p
+
+  if exists('*lightline#update_once')
+    call lightline#update_once()
+  endif
 endfunction
 
 " Does a git diff of commits a and b. Will create one simplediff-buffer that is
