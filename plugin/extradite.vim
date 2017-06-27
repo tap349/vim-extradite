@@ -260,7 +260,7 @@ function! s:SimpleFileDiff(git_cmd,a,b) abort
   call s:SimpleDiff(a:git_cmd,a:a,a:b)
   let win = bufwinnr(b:extradite_simplediff_bufnr)
   exe 'keepjumps '.win.'wincmd w'
-  " IDK what it's for - it just deletes 5 lines in diff buffer
+  keepjumps silent normal! gg
   "setlocal modifiable
   "  keepjumps silent normal! gg5dd
   "setlocal nomodifiable
