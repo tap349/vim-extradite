@@ -40,7 +40,7 @@ function! s:Extradite(bang) abort
   let path = FugitivePath(@%, '')
   try
     let git_dir = fugitive#repo().dir()
-    let template_cmd = ['--no-pager', 'log', '-n100', '--follow']
+    let template_cmd = ['--no-pager', 'log', '-n100']
     let bufnr = bufnr('')
     let base_file_name = tempname()
     call s:ExtraditeLoadCommitData(a:bang, base_file_name, template_cmd, path)
@@ -312,7 +312,6 @@ function! s:SimpleDiff(git_cmd,a,b) abort
   let b:files = { 'a': a:a, 'b': a:b }
   normal! zR
   keepjumps wincmd p
-
 endfunction
 
 " vim:set ft=vim ts=8 sw=2 sts=2 et
