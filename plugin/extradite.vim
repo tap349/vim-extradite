@@ -6,6 +6,7 @@
 if exists('g:loaded_extradite')
     finish
 endif
+
 let g:loaded_extradite = 1
 
 if !exists('g:extradite_width')
@@ -38,6 +39,7 @@ function! s:Extradite(bang) abort
   endif
 
   let path = FugitivePath(@%, '')
+
   try
     let git_dir = fugitive#repo().dir()
     let template_cmd = ['--no-pager', 'log', '-n100']
@@ -47,10 +49,13 @@ function! s:Extradite(bang) abort
     let b:base_file_name = base_file_name
     let b:git_dir = git_dir
     let b:extradite_logged_bufnr = bufnr
+
     if g:extradite_resize
         exe 'vertical resize '.g:extradite_width
     endif
+
     command! -buffer -bang Extradite :execute s:Extradite(<bang>0)
+
     " add :echo<CR> in the end to clear command line after closing extradite
     nnoremap <buffer> <silent> q          :<C-U>call <SID>ExtraditeClose()<CR>:echo<CR>
     nnoremap <buffer> <silent> <CR>       :<C-U>exe <SID>ExtraditeJump("edit")<CR>
@@ -61,13 +66,16 @@ function! s:Extradite(bang) abort
     " hack to make the cursor stay in the same position. putting line= in ExtraditeDiffToggle / removing <C-U>
     " doesn't seem to work
     nnoremap <buffer> <silent> t    :let line=line('.')<cr> :<C-U>exe <SID>ExtraditeDiffToggle()<CR> :exe line<cr>
+
     "autocmd CursorMoved <buffer>    exe 'setlocal statusline='.escape(b:extradata_list[line(".")-1]['date'], ' ')
     "autocmd CursorMoved <buffer>    exe 'setlocal statusline=' . lightline#statusline(0)
     autocmd BufEnter <buffer>       call s:ExtraditeSyntax()
     autocmd BufLeave <buffer>       hi! link CursorLine NONE
     autocmd BufLeave <buffer>       hi! link Cursor NONE
+
     " airline overwrites 'statusline' option for this window, request it to be disabled
     let w:airline_disabled = 1
+
     call s:ExtraditeDiffToggle()
     let t:extradite_bufnr = bufnr('')
     silent doautocmd User Extradite
@@ -86,17 +94,20 @@ function! s:ExtraditeLoadCommitData(bang, base_file_name, template_cmd, ...) abo
   endif
 
   let git_cmd = fugitive#repo().git_command()
+
   " insert literal tabs in the format string because git does not seem to provide an escape code for it
   if (g:extradite_showhash)
     let cmd = a:template_cmd + ['--pretty=format:%h	%an	%d	%s', '--', path]
   else
     let cmd = a:template_cmd + ['--pretty=format:%an	%d	%s', '--', path]
   endif
+
   let basecmd = escape(call(fugitive#repo().git_command,cmd,fugitive#repo()), '%')
   let extradata_cmd = a:template_cmd + ['--pretty=format:%h	%ad', '--', path]
   let extradata_basecmd = call(fugitive#repo().git_command,extradata_cmd,fugitive#repo())
 
   let log_file = a:base_file_name.'.extradite'
+
   " put the commit IDs in a separate file -- the user doesn't have to know
   " exactly what they are
   if &shell =~# 'csh'
@@ -104,6 +115,7 @@ function! s:ExtraditeLoadCommitData(bang, base_file_name, template_cmd, ...) abo
   else
     silent! execute '%write !'.basecmd.' > '.log_file.' 2> '.a:base_file_name
   endif
+
   if v:shell_error
     let v:errmsg = 'extradite: '.join(readfile(a:base_file_name),"\n")
     throw v:errmsg
@@ -112,6 +124,7 @@ function! s:ExtraditeLoadCommitData(bang, base_file_name, template_cmd, ...) abo
   let extradata_str = system(extradata_basecmd)
   let extradata = split(extradata_str, '\n')
   let extradata_list = []
+
   for line in extradata
     let tokens = matchlist(line, '\([^\t]\+\)\t\([^\t]\+\)')
     call add(extradata_list, {'commit': tokens[1], 'date': tokens[2]})
@@ -159,6 +172,7 @@ function! s:ExtraditePath(...) abort
   else
     let modifier = ''
   endif
+
   let url = expand('#' . b:extradite_logged_bufnr . ':p')
   return b:extradata_list[line(".")-1]['commit'].modifier.':'.FugitivePath(url, '')
 endfunction
@@ -170,7 +184,6 @@ endfunction
 
 " Closes the file log and returns the selected `commit:path`
 function! s:ExtraditeClose() abort
-
   if !s:ExtraditeIsActiveInTab()
     return
   endif
@@ -180,22 +193,28 @@ function! s:ExtraditeClose() abort
 
   let rev = s:ExtraditePath()
   let extradite_logged_bufnr = b:extradite_logged_bufnr
+
   if exists('b:extradite_simplediff_bufnr') && bufwinnr(b:extradite_simplediff_bufnr) >= 0
     silent exe 'keepjumps bd!' . b:extradite_simplediff_bufnr
   endif
+
   if t:extradite_switch_back
     exe b:extradite_logged_bufnr.'buffer'
   endif
+
   if bufexists(t:extradite_bufnr)
     silent exe 'keepjumps bd!' . t:extradite_bufnr
   endif
+
   let logged_winnr = bufwinnr(extradite_logged_bufnr)
   if logged_winnr >= 0
     exe 'keepjumps '.logged_winnr.'wincmd w'
   endif
+
   let t:extradite_bufnr = -1
   " enable airline back on close
   let w:airline_disabled = 0
+
   return rev
 endfunction
 
@@ -206,6 +225,7 @@ endfunction
 
 function! s:ExtraditeJump(cmd) abort
   let rev = s:ExtraditeClose()
+
   if a:cmd == 'tabedit'
       exe ':Gtabedit '.rev
   else
@@ -216,6 +236,7 @@ endfunction
 
 function! s:ExtraditeDiff(type) abort
   let rev = s:ExtraditeClose()
+
   if a:type == 2
     exe ':tabedit %|Gdiff '.rev
   else
@@ -225,6 +246,7 @@ endfunction
 
 function! s:ExtraditeSyntax() abort
   let b:current_syntax = 'extradite'
+
   if (g:extradite_showhash)
     syn match ExtraditeLogId "^\(\w\)\+"
     syn match ExtraditeLogName "\t[^\t]\+\t"
@@ -232,6 +254,7 @@ function! s:ExtraditeSyntax() abort
   else
     syn match ExtraditeLogName "^[^\t]\+\t"
   endif
+
   syn match ExtraditeLogTag "(.*)\t"
   hi def link ExtraditeLogName String
   hi def link ExtraditeLogTag Identifier
@@ -275,7 +298,6 @@ endfunction
 " Does a git diff of commits a and b. Will create one simplediff-buffer that is
 " unique wrt the buffer that it is invoked from.
 function! s:SimpleDiff(git_cmd,a,b) abort
-
   if !exists('b:extradite_simplediff_bufnr') || b:extradite_simplediff_bufnr == -1
     exec g:extradite_diff_split
     enew!
